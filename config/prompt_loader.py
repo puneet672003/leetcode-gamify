@@ -1,6 +1,5 @@
 import os
 import json
-from langchain_core.prompts import PromptTemplate
 
 
 class PromptManager:
@@ -22,11 +21,11 @@ class PromptManager:
         for name, rel_path in self.prompt_map.items():
             full_path = os.path.join(self.prompt_dir, rel_path)
             with open(full_path, "r") as f:
-                prompt_cache[name] = PromptTemplate.from_template(f.read())
+                prompt_cache[name] = f.read()
 
         return prompt_cache
 
-    def get_prompt(self, name) -> PromptTemplate:
+    def get_prompt(self, name) -> str:
         if name not in self.prompt_cache:
             raise ValueError(f"Prompt '{name}' not found in loaded cache.")
         return self.prompt_cache[name]

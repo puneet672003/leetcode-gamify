@@ -1,5 +1,6 @@
 import requests
 import logging
+from typing import List, Dict
 
 
 class LeetCodeClient:
@@ -9,7 +10,7 @@ class LeetCodeClient:
         self.timeout = timeout
         self.logger = logging.getLogger("LeetCodeClient")
 
-    def get_total_solved(self, username):
+    def _get_total_solved(self, username):
         url = f"{self.BASE_URL}/{username}"
         try:
             response = requests.get(url, timeout=self.timeout)
@@ -35,3 +36,12 @@ class LeetCodeClient:
         except Exception as e:
             self.logger.error(f"Unexpected error occured: {e}")
             return None
+
+    def get_scores(self, users: List[str]) -> Dict[str, int]:
+        scores = {}
+
+        for username in users:
+            score = self._get_total_solved(username)
+            scores[username] = score
+
+        return scores
