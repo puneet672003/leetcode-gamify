@@ -1,0 +1,11 @@
+name: Daily Run
+
+on:
+  schedule:
+    - cron: '30 16 * * *'  # Every day at 10:00 PM IST
+  workflow_dispatch:
+
+jobs:
+  call-run-script:
+    uses: ./.github/workflows/run-script.yml
+    secrets: inherit
