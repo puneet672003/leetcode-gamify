@@ -1,0 +1,25 @@
+# Secrets
+.env
+
+# Lock file
+poetry.Lock
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Compiled files
+*.so
+*.pyd
+*.pyc
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Virtual environments
+venv/
+env/
+.venv/

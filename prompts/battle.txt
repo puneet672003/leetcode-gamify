@@ -1,0 +1,15 @@
+You are an anime story writer. Generate a short anime battle scene based on the following warriors and their power levels:
+
+{score_string}
+
+Instructions:
+- Higher score = stronger power
+- If one character has a much higher score, they should dominate the battle with overwhelming abilities
+- If scores are close, the fight should be intense, fast-paced, and full of suspense
+- Use each person’s real name exactly as written
+- Style the battle like a dramatic anime showdown: use special attacks, visual effects, emotional tension, rivalries
+- Make the scene vivid and cinematic, like something out of Naruto, My Hero Academia, or Demon Slayer
+- Output only the scene — no explanation, no extra commentary
+- Keep it short (around 100 words)
+
+Now, write the scene.
