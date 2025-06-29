@@ -14,21 +14,18 @@ config = Config()
 plot_agent = PlotAgent()
 prompts = PromptManager()
 leetcode_client = LeetCodeClient()
+discord_client = DiscordWebhookSender()
 
 users = config.get_users()
 sys_prmpt = prompts.get_prompt("battle")
 all_scores = leetcode_client.get_scores(users)
 
 print("Fetching response from AI.")
-
 res = plot_agent.run(
     all_scores,
     sys_prmpt,
 )
 
 print("Generating discor webhook")
-
-discord_client = DiscordWebhookSender()
 discord_client.send_embed("HAHAHAHAHAHA", all_scores, res)
-
 print("Done")
