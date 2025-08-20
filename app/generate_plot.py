@@ -1,4 +1,6 @@
 import os
+from typing import Dict, List
+
 from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -20,14 +22,18 @@ class PlotAgent:
         chain = prompt | self.llm | StrOutputParser()
         return chain
 
-    def generate_score_string(self, scores: dict[str, int]):
+    def generate_score_string(self, scores: List[Dict]):
+        sorted_scores = sorted(scores, key=lambda x: x["total"], reverse=True)
+
         score_string = ""
-        for user, score in scores.items():
+        for user_score in sorted_scores:
+            user = user_score["user"]
+            score = user_score["total"]
             score_string += f"Warrior: {user} Power Level: {score}. \n"
 
         return score_string
 
-    def run(self, scores: dict[str, int], system_prompt: str):
+    def run(self, scores: List[Dict], system_prompt: str):
         score_string = self.generate_score_string(scores)
         chain = self._build_chain(system_prompt, score_string)
 

@@ -1,47 +1,63 @@
 import requests
-import logging
-from typing import List, Dict
 
 
-class LeetCodeClient:
-    BASE_URL = "https://leetcode-stats-api.herokuapp.com"
+class LeetCodeAPIError(Exception):
+    """Custom exception for LeetCode API errors."""
 
-    def __init__(self, timeout=5):
-        self.timeout = timeout
-        self.logger = logging.getLogger("LeetCodeClient")
 
-    def _get_total_solved(self, username):
-        url = f"{self.BASE_URL}/{username}"
+class LeetCodeAPI:
+    URL = "https://leetcode.com/graphql/"
+
+    def __init__(self, username: str):
+        self.username = username
+
+    def _make_request(self, query: str, variables: dict, operation_name: str):
+        payload = {
+            "operationName": operation_name,
+            "query": query,
+            "variables": variables,
+        }
+
+        headers = {
+            "Content-Type": "application/json",
+            "Referer": f"https://leetcode.com/u/{self.username}/",
+        }
+
         try:
-            response = requests.get(url, timeout=self.timeout)
-            response.raise_for_status()
-            data = response.json()
-
-            if "totalSolved" not in data:
-                self.logger.warning(f"Missing totalSolved in response for {username}")
-                return None
-
-            return data["totalSolved"]
-
-        except requests.RequestException as e:
-            self.logger.error(
-                f"Network error while fetching LeetCode data for {username}: {e}"
+            response = requests.post(
+                self.URL, json=payload, headers=headers, timeout=10
             )
-            return None
+            response.raise_for_status()
+        except requests.RequestException as e:
+            raise LeetCodeAPIError(f"Request failed: {e}")
 
+        try:
+            data = response.json()
+            data = data["data"]
         except ValueError:
-            self.logger.error(f"Invalid JSON response from LeetCode API for {username}")
-            return None
+            raise LeetCodeAPIError("Invalid JSON response")
 
-        except Exception as e:
-            self.logger.error(f"Unexpected error occured: {e}")
-            return None
+        return data
 
-    def get_scores(self, users: List[str]) -> Dict[str, int]:
-        scores = {}
+    def get_question_progress(self):
+        query = """
+        query userProfileUserQuestionProgressV2($userSlug: String!) {
+          userProfileUserQuestionProgressV2(userSlug: $userSlug) {
+            numAcceptedQuestions {
+              count
+              difficulty
+            }
+          }
+        }
+        """
 
-        for username in users:
-            score = self._get_total_solved(username)
-            scores[username] = score
+        data = self._make_request(
+            query=query,
+            variables={"userSlug": self.username},
+            operation_name="userProfileUserQuestionProgressV2",
+        )
 
-        return scores
+        try:
+            return data["userProfileUserQuestionProgressV2"]["numAcceptedQuestions"]
+        except (KeyError, TypeError):
+            raise LeetCodeAPIError(f"Unexpected response format: {data}")

@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, List
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 
@@ -7,18 +7,17 @@ class DiscordWebhookSender:
     def __init__(self, webhook_url=None):
         self.webhook_url = webhook_url or os.environ.get("DISCORD_WEBHOOK_URL")
 
-    def _parse_data(self, scores: Dict[str, int]):
-        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        winner = sorted_scores[0][0]
-
+    def _parse_data(self, scores: List[Dict]):
+        sorted_scores = sorted(scores, key=lambda x: x["total"], reverse=True)
+        winner = sorted_scores[0]["user"]
         leaderboard = "\n".join(
-            f"**{idx + 1}. {name}** — {score}"
-            for idx, (name, score) in enumerate(sorted_scores)
+            f"**{i+1}. {user['user']}** - {user['total']}"
+            for i, user in enumerate(sorted_scores, start=1)
         )
 
         return winner, leaderboard
 
-    def send_embed(self, title, scores, plot):
+    def send_embed(self, title: str, scores: List[Dict], plot: str):
         webhook = DiscordWebhook(url=self.webhook_url)
         winner, leaderboard = self._parse_data(scores)
 
