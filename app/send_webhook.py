@@ -11,7 +11,7 @@ class DiscordWebhookSender:
         sorted_scores = sorted(scores, key=lambda x: x["total"], reverse=True)
         winner = sorted_scores[0]["user"]
         leaderboard = "\n".join(
-            f"**{i+1}. {user['user']}** - {user['total']}"
+            f"**{i}. {user['user']}** - {user['total']}"
             for i, user in enumerate(sorted_scores, start=1)
         )
 
